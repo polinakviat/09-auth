@@ -4,6 +4,11 @@ import type { Note, NewNote } from '@/types/note';
 
 // --- Types ---
 
+export const fetchNotes = async (params: FetchNotesParams = {}) => {
+  const response = await api.get('/notes', { params });
+  return response.data;
+};
+
 export interface AuthCredentials {
   email: string;
   password: string;
@@ -85,18 +90,4 @@ export const createNote = async (noteData: NewNote): Promise<Note> => {
 
 export const deleteNote = async (noteId: string): Promise<void> => {
   await api.delete(`/notes/${noteId}`);
-};
-
-export const fetchNotes = async (
-  params: FetchNotesParams = {}
-): Promise<Note[]> => {
-  const response = await api.get<Note[]>('/notes', {
-    params: {
-      page: params.page || 1,
-      perPage: params.perPage || 12,
-      search: params.search || undefined,
-      tag: params.tag || undefined,
-    },
-  });
-  return response.data;
 };

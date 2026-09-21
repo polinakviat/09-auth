@@ -1,7 +1,9 @@
-import { api } from './api';
-import { cookies } from 'next/headers';
 import type { User } from '@/types/user';
 import type { Note, NewNote } from '@/types/note';
+import 'server-only';
+import { cookies } from 'next/headers';
+import { api } from './api';
+// ... решта коду
 
 // --- Types ---
 
@@ -22,13 +24,12 @@ export interface FetchNotesResponse {
   totalPages: number;
 }
 
-// Допоміжна функція для отримання заголовка Cookie на сервері
+// Допоміжна функція для передачі куків сесії
 const getAuthHeaders = async () => {
   const cookieStore = await cookies();
-  const cookieString = cookieStore.toString();
   return {
     headers: {
-      Cookie: cookieString,
+      Cookie: cookieStore.toString(),
     },
   };
 };
@@ -55,15 +56,15 @@ export const getMeServer = async (): Promise<User | null> => {
   }
 };
 
-// Аліас для сумісності з іншими імпортами
 export const getMe = getMeServer;
 
+// --- Server Notes Endpoints ---
 
 export const fetchNotesServer = async (
   params: FetchNotesParams = {}
-): Promise<Note[]> => {
+): Promise<FetchNotesResponse | Note[]> => {
   const config = await getAuthHeaders();
-  const response = await api.get<Note[]>('/notes', {
+  const response = await api.get('/notes', {
     ...config,
     params: {
       page: params.page || 1,
@@ -74,7 +75,6 @@ export const fetchNotesServer = async (
   });
   return response.data;
 };
-
 
 export const fetchNotes = fetchNotesServer;
 
@@ -93,4 +93,4 @@ export const createNoteServer = async (noteData: NewNote): Promise<Note> => {
 export const deleteNoteServer = async (noteId: string): Promise<void> => {
   const config = await getAuthHeaders();
   await api.delete(`/notes/${noteId}`, config);
-}
+};

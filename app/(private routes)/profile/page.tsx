@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getMe } from '../../../lib/api/serverApi';
+import { getMe } from '@/lib/api/serverApi';
 import css from './page.module.css';
 
 export const metadata: Metadata = {
@@ -22,18 +22,19 @@ export default async function ProfilePage() {
         </div>
         <div className={css.avatarWrapper}>
           <img
-            src={user.avatar}
-            alt="User Avatar"
-            width={120}
-            height={120}
-            className={css.avatar}
-          />
+      src={user?.avatar || '/default-avatar.png'}
+      alt={user?.username || 'User Avatar'}
+      width={120}
+      height={120}
+      className={css.avatar}
+    />
         </div>
         <div className={css.profileInfo}>
-          <p>Username: {user.username}</p>
-          <p>Email: {user.email}</p>
-        </div>
+    <p>Username: {user?.username || '—'}</p>
+    <p>Email: {user?.email || '—'}</p>
+  </div>
       </div>
     </main>
   );
 }
+
