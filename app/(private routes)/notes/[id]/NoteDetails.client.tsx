@@ -3,25 +3,22 @@
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { fetchNoteById } from '@/lib/api/clientApi';
-import type { Note } from '@/types/note';
 import css from './NoteDetails.module.css';
 
+// 👇 Інтерфейс обов'язково має приймати id, а не note
 interface NoteDetailsClientProps {
-  note: Note;
+  id: string;
 }
 
-export default function NoteDetailsClient({ note: initialNote }: NoteDetailsClientProps) {
+export default function NoteDetailsClient({ id }: NoteDetailsClientProps) {
   const {
-    data: note = initialNote,
+    data: note,
     isLoading,
     isError,
     error,
   } = useQuery({
-    queryKey: ['note', initialNote?.id],
-    queryFn: () => fetchNoteById(initialNote.id),
-    initialData: initialNote,
-    enabled: !!initialNote?.id,
-    refetchOnMount: false,
+    queryKey: ['note', id],
+    queryFn: () => fetchNoteById(id),
   });
 
   if (isLoading && !note) {

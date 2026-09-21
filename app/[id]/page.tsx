@@ -21,7 +21,7 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <NoteDetailsClient note={note} />
+      <NoteDetailsClient id={id} />
     </HydrationBoundary>
   );
 }

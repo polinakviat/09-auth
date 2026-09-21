@@ -6,8 +6,6 @@ import { api } from './api';
 import { AxiosResponse } from 'axios';
 // ... решта коду
 
-// --- Types ---
-
 export interface CheckSessionResponse {
   success: boolean;
   user?: User;
@@ -78,16 +76,13 @@ export const createNoteServer = async (noteData: NewNote): Promise<Note> => {
   const response = await api.post<Note>('/notes', noteData, config);
   return response.data;
 };
-
 export const deleteNoteServer = async (noteId: string): Promise<void> => {
   const config = await getAuthHeaders();
   await api.delete(`/notes/${noteId}`, config);
 };
 
-// Приклад виправлення:
-export async function checkSession(): Promise<AxiosResponse<User>> { // або шлях до вашого типу користувача
-  const response = await api.get<User>('/auth/session', {
-    // ваші налаштування кук/заголовків
-  });
-  return response; // 👈 Повертаємо весь об'єкт response, а не response.data
+export async function checkSession(): Promise<AxiosResponse<User>> {
+  const config = await getAuthHeaders();
+  const response = await api.get<User>('/auth/session', config);
+  return response;
 }

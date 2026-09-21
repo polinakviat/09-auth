@@ -1,22 +1,30 @@
-import {
-  QueryClient,
-  HydrationBoundary,
-  dehydrate,
-} from '@tanstack/react-query';
-import { fetchNoteById } from '../../../../lib/api/clientApi';
-import NotePreviewClient from './NotePreview.client';
+import type { Metadata } from 'next';
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import { fetchNoteById } from '@/lib/api/serverApi'; // 👈 Обов'язково з serverApi
+import NotePreviewClient from './NotePreview.client'; // Або шлях до вашого клієнтського компонента модалки
 
 interface ModalNotePageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function InterceptedNoteModalPage({
-  params,
-}: ModalNotePageProps) {
+export async function generateMetadata({ params }: ModalNotePageProps): Promise<Metadata> {
+  const { id } = await params;
+  try {
+    const note = await fetchNoteById(id);
+    return {
+      title: note.title || 'Note Preview',
+    };
+  } catch {
+    return {
+      title: 'Note Preview',
+    };
+  }
+}
+
+export default async function ModalNotePage({ params }: ModalNotePageProps) {
   const { id } = await params;
   const queryClient = new QueryClient();
 
-  // Заздалегідь завантажуємо дані нотатки у кеш на сервері
   await queryClient.prefetchQuery({
     queryKey: ['note', id],
     queryFn: () => fetchNoteById(id),

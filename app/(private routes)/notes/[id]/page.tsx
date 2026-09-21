@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 import { fetchNoteById } from '@/lib/api/serverApi';
 import NoteDetailsClient from './NoteDetails.client';
-import type { Note } from '@/types/note';
 
 interface NoteDetailsPageProps {
   params: Promise<{ id: string }>;
@@ -26,15 +25,15 @@ export default async function NoteDetailsPage({ params }: NoteDetailsPageProps) 
   const { id } = await params;
   const queryClient = new QueryClient();
 
-  // Виконуємо prefetchQuery та одразу отримуємо типізований результат запиту
-  const note = await queryClient.fetchQuery({
+  // Виключно prefetchQuery, жодних присвоювань у змінні чи fetchQuery
+  await queryClient.prefetchQuery({
     queryKey: ['note', id],
     queryFn: () => fetchNoteById(id),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <NoteDetailsClient note={note} />
+      <NoteDetailsClient id={id} />
     </HydrationBoundary>
   );
 }
