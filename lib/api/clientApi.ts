@@ -89,3 +89,10 @@ export const getMeClient = async (): Promise<User> => {
 // Додаємо аліаси для зворотної сумісності з AuthProvider:
 export const checkSession = checkSessionClient;
 export const getMe = getMeClient;
+
+// lib/api/clientApi.ts
+
+export const fetchNoteById = async (id: string): Promise<Note> => {
+  const response = await api.get<Note>(`/notes/${id}`);
+  return response.data;
+};
