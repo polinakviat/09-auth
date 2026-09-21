@@ -2,10 +2,10 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 import { login } from '@/lib/api/clientApi';
-import { useAuthStore } from '../../../lib/store/authStore';
-import css from './page.module.css';
+import { useAuthStore } from '@/lib/store/authStore';
+import css from './SignInPage.module.css';
 
 interface ApiErrorResponse {
   message?: string;
@@ -25,7 +25,6 @@ export default function SignInPage() {
     const password = formData.get('password') as string;
 
     try {
-      // Тут має бути login, а не register
       const userData = await login({ email, password });
       setUser(userData);
       router.push('/profile');
