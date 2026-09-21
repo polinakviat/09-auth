@@ -1,33 +1,54 @@
-import { api } from '../axios';
-import type { Note, FetchNotesParams, CreateNoteDto } from '../../../types/note';
+import { NextRequest, NextResponse } from 'next/server';
+import axios from 'axios';
+import { api } from '@/lib/api/api';
 
-// GET /api/notes
-export const fetchNotes = async (params: FetchNotesParams = {}): Promise<Note[]> => {
-  const response = await api.get<Note[]>('/api/notes', {
-    params: {
-      page: params.page || 1,
-      perPage: 12, // Обов'язково 12 за умовою
-      search: params.search || undefined,
-      tag: params.tag || undefined,
-    },
-  });
-  return response.data;
-};
+export async function GET(req: NextRequest) {
+  try {
+    const cookieHeader = req.headers.get('cookie') || '';
+    const searchParams = req.nextUrl.searchParams.toString();
+    const url = searchParams ? `/notes?${searchParams}` : '/notes';
 
-// GET /api/notes/:id
-export const fetchNoteById = async (id: string): Promise<Note> => {
-  const response = await api.get<Note>(`/api/notes/${id}`);
-  return response.data;
-};
+    const response = await api.get(url, {
+      headers: { Cookie: cookieHeader },
+    });
 
-// POST /api/notes
-export const createNote = async (dto: CreateNoteDto): Promise<Note> => {
-  const response = await api.post<Note>('/api/notes', dto);
-  return response.data;
-};
+    return NextResponse.json(response.data);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return NextResponse.json(
+        { message: error.response?.data?.message || 'Failed to fetch notes' },
+        { status: error.response?.status || 500 }
+      );
+    }
 
-// DELETE /api/notes/:id
-export const deleteNote = async (id: string): Promise<Note> => {
-  const response = await api.delete<Note>(`/api/notes/${id}`);
-  return response.data;
-};
+    return NextResponse.json(
+      { message: 'An unexpected error occurred' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const cookieHeader = req.headers.get('cookie') || '';
+    const body = await req.json();
+
+    const response = await api.post('/notes', body, {
+      headers: { Cookie: cookieHeader },
+    });
+
+    return NextResponse.json(response.data, { status: 201 });
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return NextResponse.json(
+        { message: error.response?.data?.message || 'Failed to create note' },
+        { status: error.response?.status || 500 }
+      );
+    }
+
+    return NextResponse.json(
+      { message: 'An unexpected error occurred' },
+      { status: 500 }
+    );
+  }
+}
