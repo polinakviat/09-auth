@@ -2,12 +2,13 @@
 
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import { fetchNoteById } from '../../../lib/api/api';
+import { fetchNoteById } from '@/lib/api/clientApi';
 import css from './NoteDetails.module.css';
 
 interface NoteDetailsClientProps {
   id: string;
 }
+
 
 export default function NoteDetailsClient({ id }: NoteDetailsClientProps) {
   const {
