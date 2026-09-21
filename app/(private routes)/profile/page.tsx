@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getMe } from '@/app/api/serverApi';
+import { getMe } from '@/lib/api/serverApi';
 import css from './page.module.css';
 
 export const metadata: Metadata = {
