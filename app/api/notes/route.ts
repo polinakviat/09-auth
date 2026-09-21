@@ -1,54 +1,66 @@
 import { NextRequest, NextResponse } from 'next/server';
-import axios from 'axios';
-import { api } from '@/lib/api/api';
+import { api } from '../api';
+import { cookies } from 'next/headers';
+import { isAxiosError } from 'axios';
+import { logErrorResponse } from '../_utils/utils';
 
-export async function GET(req: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const cookieHeader = req.headers.get('cookie') || '';
-    const searchParams = req.nextUrl.searchParams.toString();
-    const url = searchParams ? `/notes?${searchParams}` : '/notes';
+    const cookieStore = await cookies();
+    const search = request.nextUrl.searchParams.get('search') ?? '';
+    const page = Number(request.nextUrl.searchParams.get('page') ?? 1);
+    const rawTag = request.nextUrl.searchParams.get('tag') ?? '';
+    const tag = rawTag === 'All' ? '' : rawTag;
 
-    const response = await api.get(url, {
-      headers: { Cookie: cookieHeader },
+    const res = await api('/notes', {
+      params: {
+        ...(search !== '' && { search }),
+        page,
+        perPage: 12,
+        ...(tag && { tag }),
+      },
+      headers: {
+        Cookie: cookieStore.toString(),
+      },
     });
 
-    return NextResponse.json(response.data);
+    return NextResponse.json(res.data, { status: res.status });
   } catch (error) {
-    if (axios.isAxiosError(error)) {
+    if (isAxiosError(error)) {
+      logErrorResponse(error.response?.data);
       return NextResponse.json(
-        { message: error.response?.data?.message || 'Failed to fetch notes' },
-        { status: error.response?.status || 500 }
+        { error: error.message, response: error.response?.data },
+        { status: error.status }
       );
     }
-
-    return NextResponse.json(
-      { message: 'An unexpected error occurred' },
-      { status: 500 }
-    );
+    logErrorResponse({ message: (error as Error).message });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const cookieHeader = req.headers.get('cookie') || '';
-    const body = await req.json();
+    const cookieStore = await cookies();
 
-    const response = await api.post('/notes', body, {
-      headers: { Cookie: cookieHeader },
+    const body = await request.json();
+
+    const res = await api.post('/notes', body, {
+      headers: {
+        Cookie: cookieStore.toString(),
+        'Content-Type': 'application/json',
+      },
     });
 
-    return NextResponse.json(response.data, { status: 201 });
+    return NextResponse.json(res.data, { status: res.status });
   } catch (error) {
-    if (axios.isAxiosError(error)) {
+    if (isAxiosError(error)) {
+      logErrorResponse(error.response?.data);
       return NextResponse.json(
-        { message: error.response?.data?.message || 'Failed to create note' },
-        { status: error.response?.status || 500 }
+        { error: error.message, response: error.response?.data },
+        { status: error.status }
       );
     }
-
-    return NextResponse.json(
-      { message: 'An unexpected error occurred' },
-      { status: 500 }
-    );
+    logErrorResponse({ message: (error as Error).message });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

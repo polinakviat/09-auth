@@ -1,11 +1,11 @@
 import type { NextConfig } from 'next';
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'name.global',
+        hostname: 'ac.goit.global', // 👈 Додайте або виправте цей рядок
       },
     ],
   },

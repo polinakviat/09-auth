@@ -3,6 +3,7 @@ import type { Note, NewNote } from '@/types/note';
 import 'server-only';
 import { cookies } from 'next/headers';
 import { api } from './api';
+import { AxiosResponse } from 'axios';
 // ... решта коду
 
 // --- Types ---
@@ -32,18 +33,6 @@ const getAuthHeaders = async () => {
       Cookie: cookieStore.toString(),
     },
   };
-};
-
-// --- Server Auth Endpoints ---
-
-export const checkSession = async (): Promise<CheckSessionResponse> => {
-  try {
-    const config = await getAuthHeaders();
-    const response = await api.get<CheckSessionResponse>('/auth/session', config);
-    return response.data;
-  } catch {
-    return { success: false };
-  }
 };
 
 export const getMeServer = async (): Promise<User | null> => {
@@ -94,3 +83,11 @@ export const deleteNoteServer = async (noteId: string): Promise<void> => {
   const config = await getAuthHeaders();
   await api.delete(`/notes/${noteId}`, config);
 };
+
+// Приклад виправлення:
+export async function checkSession(): Promise<AxiosResponse<User>> { // або шлях до вашого типу користувача
+  const response = await api.get<User>('/auth/session', {
+    // ваші налаштування кук/заголовків
+  });
+  return response; // 👈 Повертаємо весь об'єкт response, а не response.data
+}

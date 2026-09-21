@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { fetchNotes  } from '../../../../../lib/api/clientApi';
+import { fetchNotes } from '../../../../../lib/api/clientApi';
 import type { Note } from '../../../../../types/note';
 
 import { NoteList } from '../../../../../components/NoteList/NoteList';
@@ -22,14 +22,16 @@ export default function NotesClient({ tag }: NotesClientProps) {
   const [page, setPage] = useState<number>(1);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [inputValue, setInputValue] = useState<string>('');
+
   const { data, isLoading, isError, error } = useQuery({
-      queryKey: ['notes', page, searchQuery, tag],
-      queryFn: () => fetchNotes({ page, search: searchQuery, tag }),
-      placeholderData: keepPreviousData,
-    });
-const notes: Note[] = data || [];
-  const perPage = 12;
-  const totalPages = notes.length < perPage && page === 1 ? 1 : notes.length === perPage ? page + 1 : page;
+    queryKey: ['notes', page, searchQuery, tag],
+    queryFn: () => fetchNotes({ page, search: searchQuery, tag }),
+    placeholderData: keepPreviousData,
+  });
+
+  // Безпечно витягуємо масив нотаток та загальну кількість сторінок з об'єкта відповіді API
+  const notes: Note[] = data?.notes || [];
+  const totalPages = data?.totalPages || 1;
 
   const debouncedSearch = useDebouncedCallback((value: string) => {
     setSearchQuery(value);
