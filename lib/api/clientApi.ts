@@ -2,6 +2,7 @@ import { api } from './api';
 import type { User } from '@/types/user';
 import type { Note, NewNote } from '@/types/note';
 
+// --- Types ---
 
 export interface AuthCredentials {
   email: string;
@@ -21,6 +22,11 @@ export interface FetchNotesParams {
   perPage?: number;
   search?: string;
   tag?: string;
+}
+
+export interface FetchNotesResponse {
+  notes: Note[];
+  totalPages: number;
 }
 
 export interface UpdateUserRequest {
@@ -44,26 +50,31 @@ export const logout = async (): Promise<void> => {
   await api.post('/auth/logout');
 };
 
+export const checkSessionClient = async (): Promise<CheckSessionResponse> => {
+  const response = await api.get<CheckSessionResponse>('/auth/session');
+  return response.data;
+};
+
+// Аліас для сумісності з AuthProvider
+export const checkSession = checkSessionClient;
 
 // --- User Endpoints ---
 
+export const getMeClient = async (): Promise<User> => {
+  const response = await api.get<User>('/users/me');
+  return response.data;
+};
+
+// Аліас для сумісності з AuthProvider
+export const getMe = getMeClient;
 
 export const updateMe = async (data: UpdateUserRequest): Promise<User> => {
   const response = await api.patch<User>('/users/me', data);
   return response.data;
 };
 
-// --- Notes Endpoints ---
-
-export const fetchNotes = async (params: FetchNotesParams = {}): Promise<Note[]> => {
-  const response = await api.get<Note[]>('/notes', {
-    params: {
-      page: params.page || 1,
-      perPage: params.perPage || 12,
-      search: params.search || undefined,
-      tag: params.tag || undefined,
-    },
-  });
+export const fetchNoteById = async (id: string): Promise<Note> => {
+  const response = await api.get<Note>(`/notes/${id}`);
   return response.data;
 };
 
@@ -76,23 +87,16 @@ export const deleteNote = async (noteId: string): Promise<void> => {
   await api.delete(`/notes/${noteId}`);
 };
 
-export const checkSessionClient = async (): Promise<CheckSessionResponse> => {
-  const response = await api.get<CheckSessionResponse>('/auth/session');
-  return response.data;
-};
-
-export const getMeClient = async (): Promise<User> => {
-  const response = await api.get<User>('/users/me');
-  return response.data;
-};
-
-// Додаємо аліаси для зворотної сумісності з AuthProvider:
-export const checkSession = checkSessionClient;
-export const getMe = getMeClient;
-
-// lib/api/clientApi.ts
-
-export const fetchNoteById = async (id: string): Promise<Note> => {
-  const response = await api.get<Note>(`/notes/${id}`);
+export const fetchNotes = async (
+  params: FetchNotesParams = {}
+): Promise<Note[]> => {
+  const response = await api.get<Note[]>('/notes', {
+    params: {
+      page: params.page || 1,
+      perPage: params.perPage || 12,
+      search: params.search || undefined,
+      tag: params.tag || undefined,
+    },
+  });
   return response.data;
 };

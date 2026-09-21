@@ -1,52 +1,73 @@
-import { cookies } from 'next/headers';
 import { api } from './api';
-import type { Note, FetchNotesParams } from '../../types/note';
-import type { User } from '../../types/user';
-import type { CheckSessionResponse } from './clientApi';
+import { cookies } from 'next/headers';
+import type { User } from '@/types/user';
+import type { Note, NewNote } from '@/types/note';
 
-export const getMe = async (): Promise<User> => {
-  const cookieStore = await cookies();
-  const cookieHeader = cookieStore.toString();
+// --- Types ---
 
-  const response = await api.get<User>('/users/me', {
-    headers: {
-      Cookie: cookieHeader,
-    },
-  });
+export interface CheckSessionResponse {
+  success: boolean;
+  user?: User;
+}
 
-  return response.data;
-};
+export interface FetchNotesParams {
+  page?: number;
+  perPage?: number;
+  search?: string;
+  tag?: string;
+}
 
-export const checkSession = async (): Promise<CheckSessionResponse> => {
-  const cookieStore = await cookies();
-  const cookieHeader = cookieStore.toString();
+export interface FetchNotesResponse {
+  notes: Note[];
+  totalPages: number;
+}
 
-  const response = await api.get<CheckSessionResponse>('/auth/session', {
-    headers: {
-      Cookie: cookieHeader,
-    },
-  });
-
-  return response.data;
-};
-
-// Допоміжна функція для отримання заголовків з кукі на сервері
+// Допоміжна функція для отримання заголовка Cookie на сервері
 const getAuthHeaders = async () => {
   const cookieStore = await cookies();
+  const cookieString = cookieStore.toString();
   return {
     headers: {
-      Cookie: cookieStore.toString(),
+      Cookie: cookieString,
     },
   };
 };
 
-export const fetchNotes = async (params: FetchNotesParams = {}): Promise<Note[]> => {
-  const authHeaders = await getAuthHeaders();
+// --- Server Auth Endpoints ---
+
+export const checkSession = async (): Promise<CheckSessionResponse> => {
+  try {
+    const config = await getAuthHeaders();
+    const response = await api.get<CheckSessionResponse>('/auth/session', config);
+    return response.data;
+  } catch {
+    return { success: false };
+  }
+};
+
+export const getMeServer = async (): Promise<User | null> => {
+  try {
+    const config = await getAuthHeaders();
+    const response = await api.get<User>('/users/me', config);
+    return response.data;
+  } catch {
+    return null;
+  }
+};
+
+// Аліас для сумісності з іншими імпортами
+export const getMe = getMeServer;
+
+
+export const fetchNotesServer = async (
+  params: FetchNotesParams = {}
+): Promise<Note[]> => {
+  const config = await getAuthHeaders();
   const response = await api.get<Note[]>('/notes', {
-    ...authHeaders,
+    ...config,
     params: {
       page: params.page || 1,
-      perPage: 12,
+      perPage: params.perPage || 12,
       search: params.search || undefined,
       tag: params.tag || undefined,
     },
@@ -54,8 +75,22 @@ export const fetchNotes = async (params: FetchNotesParams = {}): Promise<Note[]>
   return response.data;
 };
 
+
+export const fetchNotes = fetchNotesServer;
+
 export const fetchNoteById = async (id: string): Promise<Note> => {
-  const authHeaders = await getAuthHeaders();
-  const response = await api.get<Note>(`/notes/${id}`, authHeaders);
+  const config = await getAuthHeaders();
+  const response = await api.get<Note>(`/notes/${id}`, config);
   return response.data;
 };
+
+export const createNoteServer = async (noteData: NewNote): Promise<Note> => {
+  const config = await getAuthHeaders();
+  const response = await api.post<Note>('/notes', noteData, config);
+  return response.data;
+};
+
+export const deleteNoteServer = async (noteId: string): Promise<void> => {
+  const config = await getAuthHeaders();
+  await api.delete(`/notes/${noteId}`, config);
+}

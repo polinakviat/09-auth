@@ -37,14 +37,13 @@ export default function NotesPageClient({ tag }: NotesClientProps) {
     debouncedSearch(value);
   };
 
-  // Всередині useQuery:
-  const { data, isLoading, isError, error } = useQuery({
+const { data, isLoading, isError, error } = useQuery({
   queryKey: ['notes', page, searchQuery, tag],
   queryFn: () => fetchNotes({ page, perPage, search: searchQuery, tag }),
   placeholderData: keepPreviousData,
 });
 
-  const notes: Note[] = data || [];
+const notes: Note[] = data || [];
 const totalPages: number = notes.length < perPage && page === 1 ? 1 : notes.length === perPage ? page + 1 : page;
 
   return (
