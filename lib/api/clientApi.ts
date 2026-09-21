@@ -2,7 +2,6 @@ import { api } from './api';
 import type { User } from '@/types/user';
 import type { Note, NewNote } from '@/types/note';
 
-// --- Types ---
 
 export interface AuthCredentials {
   email: string;
@@ -45,17 +44,9 @@ export const logout = async (): Promise<void> => {
   await api.post('/auth/logout');
 };
 
-export const checkSessionClient = async (): Promise<CheckSessionResponse> => {
-  const response = await api.get<CheckSessionResponse>('/auth/session');
-  return response.data;
-};
 
 // --- User Endpoints ---
 
-export const getMeClient = async (): Promise<User> => {
-  const response = await api.get<User>('/users/me');
-  return response.data;
-};
 
 export const updateMe = async (data: UpdateUserRequest): Promise<User> => {
   const response = await api.patch<User>('/users/me', data);
@@ -84,3 +75,17 @@ export const createNote = async (noteData: NewNote): Promise<Note> => {
 export const deleteNote = async (noteId: string): Promise<void> => {
   await api.delete(`/notes/${noteId}`);
 };
+
+export const checkSessionClient = async (): Promise<CheckSessionResponse> => {
+  const response = await api.get<CheckSessionResponse>('/auth/session');
+  return response.data;
+};
+
+export const getMeClient = async (): Promise<User> => {
+  const response = await api.get<User>('/users/me');
+  return response.data;
+};
+
+// Додаємо аліаси для зворотної сумісності з AuthProvider:
+export const checkSession = checkSessionClient;
+export const getMe = getMeClient;
