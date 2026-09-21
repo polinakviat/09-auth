@@ -1,0 +1,74 @@
+.modalContent {
+  padding: 12px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 12px;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0;
+}
+
+.tag {
+  background-color: #ebf8ff;
+  color: #3182ce;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.content {
+  color: #4a5568;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.text {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.footer {
+  font-size: 0.875rem;
+  color: #a0aec0;
+  border-top: 1px solid #f7fafc;
+  padding-top: 12px;
+}
+
+.statusText,
+.errorText {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.errorText {
+  color: #e53e3e;
+}
+
+.closeBtn {
+  display: block;
+  margin: 0 auto;
+  padding: 8px 16px;
+  background-color: #edf2f7;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
