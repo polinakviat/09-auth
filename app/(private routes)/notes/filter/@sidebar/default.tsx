@@ -9,12 +9,9 @@ export default function SidebarDefault() {
       <h3 className={css.title}>Categories</h3>
       <nav className={css.nav}>
         <ul className={css.tagList}>
-          {/* Посилання "All notes" */}
           <li className={css.tagItem}>
             <TagLink href="/notes/filter/all">All notes</TagLink>
           </li>
-
-          {/* Список категорій за тегами */}
           {tags.map(tag => (
             <li key={tag} className={css.tagItem}>
               <TagLink href={`/notes/filter/${encodeURIComponent(tag)}`}>

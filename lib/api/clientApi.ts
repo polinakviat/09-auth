@@ -2,8 +2,6 @@ import { api } from './api';
 import type { User } from '@/types/user';
 import type { Note, NewNote } from '@/types/note';
 
-// --- Types ---
-
 export const fetchNotes = async (params: FetchNotesParams = {}) => {
   const response = await api.get('/notes', { params });
   return response.data;
@@ -39,8 +37,6 @@ export interface UpdateUserRequest {
   avatar?: string;
 }
 
-// --- Auth Endpoints ---
-
 export const login = async (credentials: LoginRequest): Promise<User> => {
   const response = await api.post<User>('/auth/login', credentials);
   return response.data;
@@ -60,17 +56,12 @@ export const checkSessionClient = async (): Promise<CheckSessionResponse> => {
   return response.data;
 };
 
-// Аліас для сумісності з AuthProvider
 export const checkSession = checkSessionClient;
-
-// --- User Endpoints ---
 
 export const getMeClient = async (): Promise<User> => {
   const response = await api.get<User>('/users/me');
   return response.data;
 };
-
-// Аліас для сумісності з AuthProvider
 export const getMe = getMeClient;
 
 export const updateMe = async (data: UpdateUserRequest): Promise<User> => {

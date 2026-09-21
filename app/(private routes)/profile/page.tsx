@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { getMe } from '@/lib/api/serverApi'; // Перевірте шлях до вашого серверного API
+import { getMe } from '@/lib/api/serverApi';
 import css from './page.module.css';
 
 export const metadata: Metadata = {
@@ -11,7 +11,6 @@ export const metadata: Metadata = {
 export default async function ProfilePage() {
   const user = await getMe();
 
-  // 🛡️ Захист від null/undefined: якщо користувача немає, виводимо повідомлення або редіректимо
   if (!user) {
     return (
       <div className={css.container}>
@@ -23,9 +22,8 @@ export default async function ProfilePage() {
   return (
     <main className={css.container}>
       <div className={css.profileCard}>
-        {/* Використовуємо компонент Image замість <img> */}
         <Image
-          src={user.avatar || '/default-avatar.png'} // Запасний варіант, якщо аватар відсутній
+          src={user.avatar || '/default-avatar.png'}
           alt="User Avatar"
           width={100}
           height={100}

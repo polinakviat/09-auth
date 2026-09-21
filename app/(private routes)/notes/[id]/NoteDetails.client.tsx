@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { fetchNoteById } from '@/lib/api/clientApi';
 import css from './NoteDetails.module.css';
 
-// 👇 Інтерфейс обов'язково має приймати id, а не note
 interface NoteDetailsClientProps {
   id: string;
 }

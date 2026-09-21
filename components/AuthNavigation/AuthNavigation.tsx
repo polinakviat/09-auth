@@ -9,7 +9,6 @@ import css from './AuthNavigation.module.css';
 export const AuthNavigation = () => {
   const router = useRouter();
 
-  // Отримуємо стан авторизації та екшн зі стору
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const user = useAuthStore((state) => state.user);
   const clearIsAuthenticated = useAuthStore((state) => state.clearIsAuthenticated);

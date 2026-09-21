@@ -4,7 +4,6 @@ import 'server-only';
 import { cookies } from 'next/headers';
 import { api } from './api';
 import { AxiosResponse } from 'axios';
-// ... решта коду
 
 export interface CheckSessionResponse {
   success: boolean;
@@ -23,7 +22,6 @@ export interface FetchNotesResponse {
   totalPages: number;
 }
 
-// Допоміжна функція для передачі куків сесії
 const getAuthHeaders = async () => {
   const cookieStore = await cookies();
   return {
@@ -44,8 +42,6 @@ export const getMeServer = async (): Promise<User | null> => {
 };
 
 export const getMe = getMeServer;
-
-// --- Server Notes Endpoints ---
 
 export const fetchNotesServer = async (
   params: FetchNotesParams = {}

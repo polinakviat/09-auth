@@ -19,11 +19,8 @@ export default async function FilteredNotesPage({ params }: FilterPageProps) {
   const { slug } = await params;
   const tag = slug?.[0] ? decodeURIComponent(slug[0]) : undefined;
 
-  // Отримуємо дані з серверного API
   const response = await fetchNotes({ tag });
   
-  // Витягуємо сам масив нотаток із відповіді (залежно від структури API це може бути response.notes або response.data)
-  // Якщо fetchNotes повертає безпосередньо масив, просто залиште response
   const notes: Note[] = Array.isArray(response) ? response : response.notes || [];
 
   return (

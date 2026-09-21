@@ -12,7 +12,6 @@ interface TagLinkProps {
 export function TagLink({ href, children }: TagLinkProps) {
   const pathname = usePathname();
 
-  // Логіка активного стану однакова для всіх тегів та для "All notes"
   const isActive =
     pathname === href ||
     (href === '/notes/filter/all' && pathname === '/notes/filter');

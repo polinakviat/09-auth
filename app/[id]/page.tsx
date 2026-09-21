@@ -9,7 +9,7 @@ interface PageProps {
 export default async function Page({ params }: PageProps) {
   const { id } = await params;
 
-  // Отримуємо нотатку на сервері
+  
   const note = await fetchNoteById(id);
 
   const queryClient = new QueryClient();

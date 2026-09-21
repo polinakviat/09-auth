@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { parseSetCookie } from 'cookie';
-import { checkSession } from './lib/api/serverApi'; // Змініть на вашу функцію перевірки сесії
+import { checkSession } from './lib/api/serverApi';
 
 const privateRoutes = ['/profile', '/notes'];
 const publicRoutes = ['/sign-in', '/sign-up'];
@@ -11,8 +11,7 @@ export async function proxy(request: NextRequest) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
   const refreshToken = cookieStore.get('refreshToken')?.value;
-
-  const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route));
+  const isPublicRoute = publicRoutes.some((route) => pathname === route);
   const isPrivateRoute = privateRoutes.some((route) => pathname.startsWith(route));
 
   if (!accessToken) {
@@ -25,12 +24,12 @@ export async function proxy(request: NextRequest) {
           const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
           for (const cookieStr of cookieArray) {
             const parsed = parseSetCookie(cookieStr);
-            if (parsed.name && parsed.value) {
-              cookieStore.set(parsed.name, parsed.value, parsed);
+            const { name, value, ...options } = parsed;
+            if (name && value) {
+              cookieStore.set(name, value, options);
             }
           }
 
-          // Якщо сесія активна і користувач на публічному маршруті — редірект на головну з новими куками
           if (isPublicRoute) {
             return NextResponse.redirect(new URL('/', request.url), {
               headers: {
@@ -39,7 +38,6 @@ export async function proxy(request: NextRequest) {
             });
           }
 
-          // Якщо сесія активна і користувач на приватному маршруті — дозволяємо доступ з новими куками
           if (isPrivateRoute) {
             return NextResponse.next({
               headers: {
@@ -49,11 +47,9 @@ export async function proxy(request: NextRequest) {
           }
         }
       } catch {
-        // Якщо оновлення сесії не вдалося — падаємо до неавторизованого стану нижче
       }
     }
 
-    // Якщо refreshToken немає або оновлення не вдалося:
     if (isPublicRoute) {
       return NextResponse.next();
     }
@@ -63,7 +59,6 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // Якщо accessToken існує:
   if (isPublicRoute) {
     return NextResponse.redirect(new URL('/', request.url));
   }

@@ -24,12 +24,10 @@ export function NoteForm({ onClose }: NoteFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  // Отримуємо стан та екшени зі стору Zustand
   const draft = useNoteStore(state => state.draft);
   const setDraft = useNoteStore(state => state.setDraft);
   const clearDraft = useNoteStore(state => state.clearDraft);
 
-  // Стан локальних помилок валідації
   const [errors, setErrors] = useState<{
     title?: string;
     content?: string;
@@ -39,13 +37,10 @@ export function NoteForm({ onClose }: NoteFormProps) {
   const mutation = useMutation({
     mutationFn: (newNote: CreateNoteDto) => createNote(newNote),
     onSuccess: () => {
-      // 1. Очищаємо чернетку після успішного збереження
       clearDraft();
 
-      // 2. Інвалідуємо кеш нотаток
       queryClient.invalidateQueries({ queryKey: ['notes'] });
 
-      // 3. Перенаправляємо на список нотаток
       if (onClose) {
         onClose();
       } else {
@@ -54,7 +49,6 @@ export function NoteForm({ onClose }: NoteFormProps) {
     },
   });
 
-  // Обробка змін полів форми в реальному часі
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -62,13 +56,11 @@ export function NoteForm({ onClose }: NoteFormProps) {
     setDraft({ [name]: value } as Partial<DraftNote>);
   };
 
-  // Обробка відправки форми через formAction
   const handleSubmitAction = (formData: FormData) => {
     const title = (formData.get('title') as string) || '';
     const content = (formData.get('content') as string) || '';
     const tag = (formData.get('tag') as DraftNote['tag']) || 'Todo';
 
-    // Валідація
     const newErrors: { title?: string; content?: string; tag?: string } = {};
 
     if (!title.trim()) {
@@ -96,7 +88,6 @@ export function NoteForm({ onClose }: NoteFormProps) {
     mutation.mutate({ title, content, tag });
   };
 
-  // Скасування — не очищує draft, а лише повертає назад
   const handleCancel = () => {
     if (onClose) {
       onClose();

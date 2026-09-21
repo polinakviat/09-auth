@@ -1,5 +1,5 @@
 export interface Note {
-  id: string; // ID має тип String
+  id: string;
   title: string;
   content: string;
   tag: 'Todo' | 'Work' | 'Personal' | 'Meeting' | 'Shopping';
@@ -9,7 +9,7 @@ export interface Note {
 
 export interface FetchNotesParams {
   page?: number;
-  perPage?: number; // Завжди 12
+  perPage?: number;
   search?: string;
   tag?: string;
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
-import { fetchNoteById } from '@/lib/api/serverApi'; // 👈 Обов'язково з serverApi
-import NotePreviewClient from './NotePreview.client'; // Або шлях до вашого клієнтського компонента модалки
+import { fetchNoteById } from '@/lib/api/serverApi';
+import NotePreviewClient from './NotePreview.client';
 
 interface ModalNotePageProps {
   params: Promise<{ id: string }>;

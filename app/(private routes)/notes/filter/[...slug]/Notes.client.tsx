@@ -29,7 +29,6 @@ export default function NotesClient({ tag }: NotesClientProps) {
     placeholderData: keepPreviousData,
   });
 
-  // Безпечно витягуємо масив нотаток та загальну кількість сторінок з об'єкта відповіді API
   const notes: Note[] = data?.notes || [];
   const totalPages = data?.totalPages || 1;
 
