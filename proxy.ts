@@ -1,15 +1,18 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { cookies } from 'next/headers'; // 👈 Імпортуємо cookies з next/headers
 import { checkSession } from './lib/api/serverApi';
 
 const privateRoutes = ['/profile', '/notes'];
-const authRoutes = ['/sign-in', '/sign-up']; // 👈 Змінено відповідно до вимог
+const authRoutes = ['/sign-in', '/sign-up'];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const accessToken = request.cookies.get('accessToken')?.value;
-  const refreshToken = request.cookies.get('refreshToken')?.value;
+  // 🛡️ Отримуємо куки через асинхронну функцію cookies() з next/headers
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get('accessToken')?.value;
+  const refreshToken = cookieStore.get('refreshToken')?.value;
 
   let isAuthenticated = !!accessToken;
   const response = NextResponse.next();
@@ -23,7 +26,6 @@ export async function proxy(request: NextRequest) {
         // Переносимо нові куки (Set-Cookie) з відповіді бекенду до клієнта, якщо вони є
         const setCookieHeader = apiResponse.headers['set-cookie'];
         if (setCookieHeader) {
-          // Якщо заголовки масивом або рядком, додаємо їх до вихідної відповіді
           if (Array.isArray(setCookieHeader)) {
             setCookieHeader.forEach((cookie) => {
               response.headers.append('Set-Cookie', cookie);
@@ -44,7 +46,7 @@ export async function proxy(request: NextRequest) {
   // Перенаправлення неавторизованих з приватних сторінок на /sign-in
   if (isPrivate && !isAuthenticated) {
     const url = request.nextUrl.clone();
-    url.pathname = '/sign-in'; // 👈 Оновлений маршрут
+    url.pathname = '/sign-in';
     return NextResponse.redirect(url);
   }
 
