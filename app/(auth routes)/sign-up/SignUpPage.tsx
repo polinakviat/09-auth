@@ -3,7 +3,7 @@
 import axios from 'axios';
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { register } from '../../../lib/api/clientApi';
+import { register } from '../../api/clientApi';
 import { useAuthStore } from '../../../lib/store/authStore';
 import css from './page.module.css';
 

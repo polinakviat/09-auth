@@ -1,4 +1,4 @@
-import { TagLink } from '../../../../components/TagLink/TagLink';
+import { TagLink } from '../../../../../../components/TagLink/TagLink';
 import css from './SidebarNotes.module.css';
 
 const tags = ['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'];

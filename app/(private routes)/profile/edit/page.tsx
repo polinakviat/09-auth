@@ -3,7 +3,7 @@
 import { useState, FormEvent } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { updateMe } from '../../../../lib/api/clientApi';
+import { updateMe } from '../../../api/clientApi';
 import { useAuthStore } from '../../../../lib/store/authStore';
 import css from './page.module.css';
 
