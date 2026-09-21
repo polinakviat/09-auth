@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { fetchNotes } from '../../../../lib/api/api';
+import { fetchNotes } from '../../../../lib/api/clientApi';
 import type { Note } from '../../../../types/note';
 
 import { NoteList } from '../../../../components/NoteList/NoteList';
@@ -37,15 +37,15 @@ export default function NotesPageClient({ tag }: NotesClientProps) {
     debouncedSearch(value);
   };
 
-  // 3. Отримання даних з урахуванням сторінки, запиту та тегу
+  // Всередині useQuery:
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['notes', page, searchQuery, tag],
-    queryFn: () => fetchNotes(page, perPage, searchQuery, tag),
-    placeholderData: keepPreviousData,
-  });
+  queryKey: ['notes', page, searchQuery, tag],
+  queryFn: () => fetchNotes({ page, perPage, search: searchQuery, tag }),
+  placeholderData: keepPreviousData,
+});
 
-  const notes: Note[] = data?.notes || [];
-  const totalPages: number = data?.totalPages || 0;
+  const notes: Note[] = data || [];
+const totalPages: number = notes.length < perPage && page === 1 ? 1 : notes.length === perPage ? page + 1 : page;
 
   return (
     <div className={css.container}>
